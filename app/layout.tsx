@@ -1,3 +1,4 @@
+import { ApplicationProvider } from "@/contexts/ApplicationContext";
 import NonceProvider from "@/providers/NonceProvider";
 import { Inter } from "next/font/google";
 import { headers } from "next/headers";
@@ -21,7 +22,9 @@ export default async function RootLayout({
         className={`${inter.className} min-h-screen m-0 p-0`}
         data-testid="body-layout"
       >
-        <NonceProvider nonce={nonce}>{children}</NonceProvider>
+        <NonceProvider nonce={nonce}>
+          <ApplicationProvider>{children}</ApplicationProvider>
+        </NonceProvider>
       </body>
     </html>
   );
