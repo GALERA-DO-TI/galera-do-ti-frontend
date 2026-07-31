@@ -17,26 +17,7 @@ import {
   IconStar,
   IconBookmark,
   IconSettings,
-  IconFacebook,
-  IconInstagram,
-  IconTelegram,
-  IconDiscord,
-  IconYoutube,
-  IconWhatsapp,
-  IconSpotify,
-  IconLinkedin,
 } from "./icons";
-
-const redesSociais = [
-  { label: "Facebook", href: "#", icon: IconFacebook },
-  { label: "Instagram", href: "#", icon: IconInstagram },
-  { label: "Telegram", href: "#", icon: IconTelegram },
-  { label: "Discord", href: "#", icon: IconDiscord },
-  { label: "YouTube", href: "#", icon: IconYoutube },
-  { label: "WhatsApp", href: "#", icon: IconWhatsapp },
-  { label: "Spotify", href: "#", icon: IconSpotify },
-  { label: "LinkedIn", href: "#", icon: IconLinkedin },
-];
 
 interface SubmenuSection {
   title: string;
@@ -248,8 +229,8 @@ export default function Sidebar({ logado }: SidebarProps) {
           ))}
         </div>
 
-        <div className="mx-4 mt-4 flex w-[218px] shrink-0 flex-col gap-3 rounded-2xl border-[1.5px] border-[#FF2DAF]/70 bg-[#12122A] p-3">
-          <div className="flex items-center gap-3">
+        <div className="mx-4 mt-4 flex w-[218px] h-[158px] shrink-0 flex-col items-center justify-between rounded-2xl border-[1.5px] border-[#FF2DAF]/70 bg-[#12122A] px-3 py-2 shadow-[0_0_20px_rgba(255,45,175,0.35)]">
+          <div className="flex h-[90px] items-center gap-2 w-[186px]">
             <Image
               src="/axalote.png"
               alt="Axolote mascote Galera do TI"
@@ -263,26 +244,9 @@ export default function Sidebar({ logado }: SidebarProps) {
           </div>
 
           {logado && (
-            <>
-              <button className="w-full rounded-full bg-eventos-pink px-3 py-2 text-sm font-medium text-white">
-                Convidar amigos
-              </button>
-              <div className="flex flex-col gap-2">
-                <span className="text-xs text-zinc-400">Siga a gente</span>
-                <div className="flex flex-wrap gap-2 text-zinc-300">
-                  {redesSociais.map((rede) => (
-                    <a
-                      key={rede.label}
-                      href={rede.href}
-                      title={rede.label}
-                      className="flex h-7 w-7 items-center justify-center rounded-full bg-white/5 hover:bg-white/10"
-                    >
-                      <rede.icon className="h-4 w-4" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </>
+            <button className="flex h-10 w-[156px] items-center justify-center rounded-[10px] bg-gradient-to-r from-[#3B4CCA] to-[#22E4FF] px-4 py-3 text-sm font-semibold text-[#0A0A18] shadow-[0_0_16px_rgba(34,228,255,0.5)]">
+              Convidar amigos
+            </button>
           )}
         </div>
 
