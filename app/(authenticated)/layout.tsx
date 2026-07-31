@@ -1,19 +1,9 @@
 "use client";
 
-import { Amplify } from "aws-amplify";
-import {
-  Authenticator,
-  useTheme,
-  Image,
-  View,
-  useAuthenticator,
-} from "@aws-amplify/ui-react";
+import { Authenticator, Image, View } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 
-import { amplifyConfig } from "@/aws-exports";
 import React from "react";
-
-Amplify.configure(amplifyConfig);
 
 export default function AuthenticatedLayout({
   children,
