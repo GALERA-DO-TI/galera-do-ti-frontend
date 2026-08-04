@@ -1,20 +1,26 @@
 "use client";
 
+import { amplifyConfig } from "@/aws-exports";
+import AmplifyConfig from "@/components/shared/AmplifyConfig";
 import { Authenticator, Image, View } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
+import { Amplify } from "aws-amplify";
 
 import React from "react";
 
 export default function AuthenticatedLayout({
   children,
 }: React.PropsWithChildren) {
+
   return (
     <Authenticator.Provider>
       <AuthWrapper>
-        <div className="flex flex-col h-screen">
-          <header></header>
-          {children}
-        </div>
+        <AmplifyConfig>
+          <div className="flex flex-col h-screen">
+            <header></header>
+            {children}
+          </div>
+        </AmplifyConfig>
       </AuthWrapper>
     </Authenticator.Provider>
   );

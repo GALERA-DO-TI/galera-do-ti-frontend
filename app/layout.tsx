@@ -26,7 +26,6 @@ export default async function RootLayout({
       >
         <NonceProvider nonce={nonce}>
           <ApplicationProvider>
-            <AmplifyConfig />
             {children}
           </ApplicationProvider>
         </NonceProvider>
