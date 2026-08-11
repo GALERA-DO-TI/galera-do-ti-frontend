@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuthenticator } from "@aws-amplify/ui-react";
-import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Sidebar from "@/components/shared/Sidebar";
 import Header from "@/components/shared/Header";
@@ -12,24 +10,28 @@ import EventosGrid from "@/components/eventos/EventosGrid";
 import EmptyState from "@/components/eventos/EmptyState";
 import SectionCounter from "@/components/eventos/SectionCounter";
 import EventoTicketCard from "@/components/eventos/EventoTicketCard";
-import { Evento, getEventos } from "@/services/eventos";
+import UpcomingEventsStrip from "@/components/eventos/UpcomingEventsStrip";
+import { getEventos } from "@/services/eventos";
+import { Evento } from "@/interfaces/events";
 import {
   eventosMock,
   meusConfirmadosMock,
   meusInteressesMock,
+  meetupsMock,
 } from "@/components/eventos/eventosMock";
 
 const USAR_MOCK_TEMPORARIO = true;
 
-export default function EventosView() {
-  const { user } = useAuthenticator((context) => [context.user]);
-  const searchParams = useSearchParams();
+interface EventosViewProps {
+  /** A rota pública renderiza a versão deslogada; a autenticada, a completa. */
+  logado?: boolean;
+  nomeUsuario?: string;
+}
 
-  // Simulação temporária de login, enquanto o Cognito não está configurado.
-  // Remover quando a autenticação real estiver disponível.
-  const logadoSimulado = searchParams.get("logado") === "1";
-  const logado = Boolean(user) || logadoSimulado;
-
+export default function EventosView({
+  logado = true,
+  nomeUsuario,
+}: EventosViewProps) {
   const [eventos, setEventos] = useState<Evento[]>(
     USAR_MOCK_TEMPORARIO ? eventosMock : [],
   );
@@ -41,7 +43,11 @@ export default function EventosView() {
   const [meusInteresses] = useState<Evento[]>(
     USAR_MOCK_TEMPORARIO ? meusInteressesMock : [],
   );
+  const [meetups] = useState<Evento[]>(
+    USAR_MOCK_TEMPORARIO ? meetupsMock : [],
+  );
   const [categoria, setCategoria] = useState("Todos os eventos");
+  const [busca, setBusca] = useState("");
 
   useEffect(() => {
     if (USAR_MOCK_TEMPORARIO) return;
@@ -50,108 +56,117 @@ export default function EventosView() {
       .catch(() => setEventos([]));
   }, []);
 
-  const eventosFiltrados =
-    categoria === "Todos os eventos"
-      ? eventos
-      : eventos.filter((evento) => evento.categoria === categoria);
+  const eventosFiltrados = eventos
+    .filter((evento) => categoria === "Todos os eventos" || evento.categoria === categoria)
+    .filter((evento) =>
+      evento.titulo.toLowerCase().includes(busca.trim().toLowerCase()),
+    );
 
   const eventosDestaque = eventosFiltrados;
   const proximosEventos = eventosFiltrados;
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="flex h-[60px] border-b border-eventos-border">
-        <div className="hidden lg:flex w-[250px] shrink-0 items-center border-r border-eventos-border bg-eventos-sidebar px-6">
-          <Image
-            src="/logo-galera-do-ti.svg"
-            alt="Galera do TI"
-            width={180}
-            height={28}
-            priority
-          />
-        </div>
+      <div className="flex h-[45px] md:h-[60px] border-b border-eventos-border">
+        {logado && (
+          <div className="hidden lg:flex w-[250px] shrink-0 items-center border-r border-eventos-border bg-eventos-sidebar px-6">
+            <Image
+              src="/logo-galera-do-ti.svg"
+              alt="Galera do TI"
+              width={180}
+              height={28}
+              priority
+            />
+          </div>
+        )}
         <div className="flex flex-1">
-          <Header
-            logado={logado}
-            nomeUsuario={user?.username ?? (logadoSimulado ? "Carlos Silva" : undefined)}
-          />
+          <Header logado={logado} nomeUsuario={nomeUsuario} />
         </div>
       </div>
 
       <div className="flex flex-1">
-        <Sidebar logado={logado} />
+        {logado && <Sidebar />}
 
-        <main className="flex min-w-0 flex-1 flex-col gap-8 bg-eventos-page p-6 pb-20 lg:pb-6">
-          <div>
-            <h1 className="text-2xl font-semibold text-white">Eventos</h1>
-            <p className="text-sm text-zinc-400">
-              Descubra eventos, conecte-se e participe da comunidade.
-            </p>
+        <main
+          className={`flex min-w-0 flex-1 flex-col gap-8 bg-eventos-page p-4 pb-28 md:p-8 md:pb-8 ${
+            logado ? "" : "lg:px-[112px]"
+          }`}
+        >
+          <div className="flex flex-col gap-4">
+            <div>
+              <h1 className="text-base lg:text-[28px] font-bold text-white">
+                Eventos
+              </h1>
+              <p className="text-xs lg:text-base font-medium text-[#8e9198]">
+                Conecte-se, aprenda e cresça com a comunidade.
+              </p>
+            </div>
+
+            <EventosFilters onChange={setCategoria} onBuscarChange={setBusca} />
           </div>
 
-          <EventosFilters onChange={setCategoria} />
+          {logado && <UpcomingEventsStrip eventos={meusConfirmados} />}
 
           {logado && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <section className="flex flex-col gap-4">
-                <SectionCounter
-                  titulo="Meus eventos confirmados"
-                  quantidade={meusConfirmados.length}
-                />
-                {meusConfirmados.length === 0 ? (
-                  <EmptyState mensagem="Você ainda não confirmou presença em nenhum evento. Navegue pelas categorias e comece agora mesmo a se conectar e evoluir cada vez mais." />
-                ) : (
-                  <div className="flex flex-col gap-3">
-                    {meusConfirmados.map((evento) => (
-                      <EventoTicketCard key={evento.id} evento={evento} confirmado />
-                    ))}
-                  </div>
-                )}
-              </section>
+          <div className="hidden lg:grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <section className="flex flex-col gap-4">
+              <SectionCounter
+                titulo="Meus eventos confirmados"
+                quantidade={meusConfirmados.length}
+              />
+              {meusConfirmados.length === 0 ? (
+                <EmptyState mensagem="Você ainda não confirmou presença em nenhum evento. Navegue pelas categorias e comece agora mesmo a se conectar e evoluir cada vez mais." />
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {meusConfirmados.map((evento) => (
+                    <EventoTicketCard key={evento.id} evento={evento} confirmado />
+                  ))}
+                </div>
+              )}
+            </section>
 
-              <section className="flex flex-col gap-4">
-                <SectionCounter
-                  titulo="Meus interesses"
-                  quantidade={meusInteresses.length}
-                />
-                {meusInteresses.length === 0 ? (
-                  <EmptyState mensagem="Você ainda não marcou interesse em nenhum evento." />
-                ) : (
-                  <div className="flex flex-col gap-3">
-                    {meusInteresses.map((evento) => (
-                      <EventoTicketCard key={evento.id} evento={evento} />
-                    ))}
-                  </div>
-                )}
-              </section>
-            </div>
+            <section className="flex flex-col gap-4">
+              <SectionCounter
+                titulo="Meus interesses"
+                quantidade={meusInteresses.length}
+              />
+              {meusInteresses.length === 0 ? (
+                <EmptyState mensagem="Você ainda não marcou interesse em nenhum evento." />
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {meusInteresses.map((evento) => (
+                    <EventoTicketCard key={evento.id} evento={evento} />
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
           )}
 
-          {eventosDestaque.length === 0 ? (
-            <EmptyState mensagem="Ainda não temos eventos agendados." />
-          ) : (
-            <EventosGrid
-              titulo="Eventos em destaque"
-              eventos={eventosDestaque}
-              // TODO: trocar por /eventos/destaque quando essa rota existir
-              verTodosHref="/eventos"
-            />
-          )}
+          <EventosGrid
+            titulo="Eventos em destaque"
+            eventos={eventosDestaque}
+            destaque
+            // TODO: trocar por /eventos/destaque quando essa rota existir
+            verTodosHref="/eventos"
+          />
 
-          {proximosEventos.length === 0 ? (
-            <EmptyState mensagem="Ainda não temos eventos agendados." />
-          ) : (
-            <EventosGrid
-              titulo="Próximos eventos"
-              eventos={proximosEventos}
-              // TODO: trocar por /eventos/proximos quando essa rota existir
-              verTodosHref="/eventos"
-            />
-          )}
+          <EventosGrid
+            titulo="Próximos eventos"
+            eventos={proximosEventos}
+            // TODO: trocar por /eventos/proximos quando essa rota existir
+            verTodosHref="/eventos"
+          />
+
+          <EventosGrid
+            titulo="Meetups"
+            eventos={meetups}
+            mensagemVazia="Ainda não temos meetups agendados."
+          />
         </main>
       </div>
 
-      <MobileTabBar />
+      {logado && <MobileTabBar />}
     </div>
   );
 }

@@ -1,16 +1,6 @@
 import { AxiosInstance } from "axios";
 import { createAPI, configAPI } from "./api";
-
-export interface Evento {
-  id: string;
-  titulo: string;
-  descricao: string;
-  dia: string;
-  mes: string;
-  local: string;
-  categoria: "Presencial" | "Online" | "Workshop" | "Meetup";
-  imagemUrl?: string;
-}
+import { Evento } from "@/interfaces/events";
 
 let api: AxiosInstance;
 const initAPI = async () => (api = await createAPI?.(configAPI));

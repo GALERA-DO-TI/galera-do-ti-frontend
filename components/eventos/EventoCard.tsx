@@ -1,16 +1,21 @@
 import Image from "next/image";
-import { Evento } from "@/services/eventos";
-import { IconLocation } from "@/components/shared/icons";
+import { Evento } from "@/interfaces/events";
+import { IconArrowRight, IconLocation } from "@/components/shared/icons";
 
 interface EventoCardProps {
   evento: Evento;
   priority?: boolean;
+  onSaberMais?: (evento: Evento) => void;
 }
 
-export default function EventoCard({ evento, priority }: EventoCardProps) {
+export default function EventoCard({
+  evento,
+  priority,
+  onSaberMais,
+}: EventoCardProps) {
   return (
-    <div className="flex flex-col w-[360px] h-[330px] rounded-2xl border border-eventos-border bg-eventos-card shadow-[0_8px_24px_rgba(0,0,0,0.251)] overflow-hidden">
-      <div className="relative h-[140px] w-full bg-gradient-to-br from-[#3D1A6E] via-[#1B0F3D] to-[#0A0520]">
+    <div className="relative flex h-[330px] w-[360px] flex-col overflow-hidden rounded-2xl border border-eventos-border bg-eventos-card shadow-[0_8px_24px_rgba(0,0,0,0.25)]">
+      <div className="relative h-[140px] w-full shrink-0 bg-gradient-to-br from-[#3D1A6E] via-[#1B0F3D] to-[#0A0520]">
         {evento.imagemUrl && (
           <Image
             src={evento.imagemUrl}
@@ -20,36 +25,49 @@ export default function EventoCard({ evento, priority }: EventoCardProps) {
             className="object-cover"
           />
         )}
+      </div>
 
-        <span className="absolute left-3 top-3 rounded-full bg-eventos-sidebar/90 px-2.5 py-1 text-[13px] font-semibold text-eventos-cyan">
+      <div className="flex items-start justify-between px-[13px] pt-2">
+        <span className="rounded-[18px] bg-eventos-cyan/20 px-2.5 py-[3px] text-[13px] font-semibold text-eventos-cyan">
           {evento.categoria}
         </span>
 
-        <div className="absolute right-3 top-3 text-right leading-none text-white">
-          <div className="text-xl font-bold">{evento.dia}</div>
-          <div className="text-xs uppercase">{evento.mes}</div>
+        <div className="text-right leading-none text-white">
+          <div className="text-2xl font-bold">{evento.dia}</div>
+          <div className="text-sm font-medium">{evento.mes}</div>
         </div>
       </div>
 
-      <div className="flex flex-col flex-1 gap-2 p-4">
-        <h3 className="text-base font-semibold text-white">
-          {evento.titulo}
-        </h3>
-        <p className="text-sm font-normal text-white line-clamp-2">
+      <div className="flex min-h-0 flex-1 flex-col gap-1 px-[13px] pt-3">
+        <h3 className="text-base font-bold text-white">{evento.titulo}</h3>
+        <p className="line-clamp-2 text-sm font-normal text-white">
           {evento.descricao}
         </p>
 
-        <div className="mt-auto flex items-center justify-between">
-          <span className="flex items-center gap-1 text-sm text-eventos-cyan">
+        <div className="mt-auto flex items-center justify-between gap-2 pb-1">
+          <span className="flex min-w-0 items-center gap-1 text-[13px] font-semibold text-eventos-cyan">
             <IconLocation className="h-4 w-4 shrink-0" />
-            {evento.local}
+            <span className="truncate">{evento.local}</span>
           </span>
-          <button className="flex items-center gap-1 rounded-full bg-eventos-pink px-4 py-2 text-sm font-medium text-white">
+
+          <button
+            type="button"
+            onClick={() => onSaberMais?.(evento)}
+            className="flex shrink-0 items-center gap-1.5 rounded-[10px] bg-eventos-pink px-3 py-1.5 text-xs font-semibold text-white"
+          >
             Saber mais
-            <span aria-hidden>→</span>
+            <IconArrowRight className="h-3 w-5 shrink-0" />
           </button>
         </div>
       </div>
+
+      {evento.finalizado && (
+        <div className="absolute inset-0 flex items-start justify-center rounded-2xl bg-eventos-card/70 pt-[93px]">
+          <p className="text-sm font-normal text-white">
+            Este evento já foi finalizado.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

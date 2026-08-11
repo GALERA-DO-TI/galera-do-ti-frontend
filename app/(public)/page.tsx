@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import EventosView from "@/components/eventos/EventosView";
 
 export const metadata: Metadata = {
-  title: "Eventos | Galera do TI",
-  description:
-    "Descubra eventos, conecte-se e participe da comunidade Galera do TI.",
+  title: "Galera do TI",
+  description: "A maior comunidade de tecnologia.",
 };
 
-export default function EventosPage() {
+// TODO: esta rota receberá a landing page.
+export default function HomePage() {
   return <>Oi</>;
 }

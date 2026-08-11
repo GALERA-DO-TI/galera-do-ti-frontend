@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import EventosView from "@/components/eventos/EventosView";
+import EventosViewContainer from "@/components/eventos/EventosViewContainer";
 
 export const metadata: Metadata = {
   title: "Eventos | Galera do TI",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function EventosPage() {
-  return <EventosView />;
+  return <EventosViewContainer />;
 }

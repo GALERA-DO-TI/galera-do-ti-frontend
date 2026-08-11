@@ -1,4 +1,4 @@
-import { Evento } from "@/services/eventos";
+import { Evento } from "@/interfaces/events";
 
 /**
  * Dados temporários só para visualização durante o desenvolvimento.
@@ -38,6 +38,29 @@ export const eventosMock: Evento[] = [
     categoria: "Presencial",
     imagemUrl: "/cenacard.png",
   },
+  {
+    id: "4",
+    titulo: "Tech Meetup Recife",
+    descricao:
+      "Encontro da comunidade para trocar experiências sobre carreira e tecnologia.",
+    dia: "12",
+    mes: "ABR",
+    local: "Recife, PE",
+    categoria: "Meetup",
+    imagemUrl: "/cenacard.png",
+  },
+  {
+    id: "5",
+    titulo: "Workshop de React",
+    descricao:
+      "Mão na massa com os fundamentos e boas práticas de React em produção.",
+    dia: "08",
+    mes: "MAR",
+    local: "Online",
+    categoria: "Workshop",
+    imagemUrl: "/cenacard.png",
+    finalizado: true,
+  },
 ];
 
 export const meusConfirmadosMock: Evento[] = [
@@ -50,15 +73,39 @@ export const meusConfirmadosMock: Evento[] = [
     local: "São Paulo, SP",
     categoria: "Presencial",
     imagemUrl: "/cenacard.png",
+    temQrCode: true,
   },
   {
     id: "11",
-    titulo: "Dev Summit 2025",
+    titulo: "AWS Workshop",
     descricao: "",
     dia: "24",
     mes: "MAI",
     local: "Online",
     categoria: "Online",
+    imagemUrl: "/cenacard.png",
+  },
+];
+
+export const meetupsMock: Evento[] = [
+  {
+    id: "30",
+    titulo: "AI na Prática",
+    descricao: "Como aplicar IA no dia a dia de devs e times de produto.",
+    dia: "24",
+    mes: "MAI",
+    local: "Online",
+    categoria: "Meetup",
+    imagemUrl: "/cenacard.png",
+  },
+  {
+    id: "31",
+    titulo: "AI na Prática",
+    descricao: "Como aplicar IA no dia a dia de devs e times de produto.",
+    dia: "24",
+    mes: "MAI",
+    local: "Online",
+    categoria: "Meetup",
     imagemUrl: "/cenacard.png",
   },
 ];
