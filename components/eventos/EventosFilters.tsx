@@ -38,14 +38,18 @@ export default function EventosFilters({
         />
       </div>
 
-      <div className="hidden lg:flex gap-2 overflow-x-auto pb-1">
+      <div
+        role="group"
+        aria-label="Filtrar eventos por categoria"
+        className="scrollbar-none flex gap-2 overflow-x-auto pb-1"
+      >
         {CATEGORIAS.map((categoria) => (
           <button
             key={categoria}
             type="button"
             aria-pressed={categoriaAtiva === categoria}
             onClick={() => onChange?.(categoria)}
-            className={`flex h-[34px] shrink-0 items-center rounded-[999px] px-4 text-[13px] font-semibold transition-colors ${
+            className={`flex h-11 lg:h-8.5 shrink-0 items-center rounded-[999px] px-4 text-[13px] font-semibold transition-colors ${
               categoriaAtiva === categoria
                 ? "bg-eventos-pink text-white"
                 : "bg-[#12122a] text-eventos-muted hover:bg-white/10"
