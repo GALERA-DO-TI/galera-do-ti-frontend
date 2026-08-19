@@ -1,7 +1,8 @@
 "use client";
 
 import EventosSecaoView, { Secao } from "./EventosSecaoView";
-import { useLogadoPreview } from "@/hooks/useLogadoPreview";
+import Loading from "@/components/shared/Loading";
+import { useSessaoUsuario } from "@/hooks/useSessaoUsuario";
 
 interface EventosSecaoViewContainerProps {
   secao: Secao;
@@ -10,7 +11,9 @@ interface EventosSecaoViewContainerProps {
 export default function EventosSecaoViewContainer({
   secao,
 }: EventosSecaoViewContainerProps) {
-  const { logado, nomeUsuario } = useLogadoPreview();
+  const { logado, nomeUsuario, carregando } = useSessaoUsuario();
+
+  if (carregando) return <Loading comSidebar={false} />;
 
   return (
     <EventosSecaoView secao={secao} logado={logado} nomeUsuario={nomeUsuario} />
