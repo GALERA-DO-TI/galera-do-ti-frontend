@@ -7,7 +7,9 @@ import Header from "@/components/shared/Header";
 import MobileTabBar from "@/components/shared/MobileTabBar";
 import EventosFilters from "@/components/eventos/EventosFilters";
 import EventosGrid from "@/components/eventos/EventosGrid";
-import EmptyState from "@/components/eventos/EmptyState";
+import EmptyState, {
+  EmptyStateVariant,
+} from "@/components/eventos/EmptyState";
 import SectionCounter from "@/components/eventos/SectionCounter";
 import EventoTicketCard from "@/components/eventos/EventoTicketCard";
 import UpcomingEventsStrip from "@/components/eventos/UpcomingEventsStrip";
@@ -65,11 +67,17 @@ export default function EventosView({
   const eventosDestaque = eventosFiltrados;
   const proximosEventos = eventosFiltrados;
 
+  // Com busca/filtro ativo, a lista vazia é "sem resultado" e não "seção sem eventos".
+  const filtroAtivo = categoria !== "Todos os eventos" || busca.trim() !== "";
+  const variantListaFiltrada: EmptyStateVariant = filtroAtivo
+    ? "busca-sem-resultado"
+    : "secao-vazia";
+
   return (
     <div className="flex flex-1 flex-col">
-      <div className="flex h-[45px] md:h-[60px] border-b border-eventos-border">
+      <div className="flex h-11.25 md:h-15 border-b border-eventos-border">
         {logado && (
-          <div className="hidden lg:flex w-[250px] shrink-0 items-center border-r border-eventos-border bg-eventos-sidebar px-6">
+          <div className="hidden lg:flex w-62.5 shrink-0 items-center border-r border-eventos-border bg-eventos-sidebar px-6">
             <Image
               src="/logo-galera-do-ti.svg"
               alt="Galera do TI"
@@ -89,7 +97,7 @@ export default function EventosView({
 
         <main
           className={`flex min-w-0 flex-1 flex-col gap-8 bg-eventos-page p-4 pb-28 md:p-8 md:pb-8 ${
-            logado ? "" : "lg:px-[112px]"
+            logado ? "" : "lg:px-28"
           }`}
         >
           <div className="flex flex-col gap-4">
@@ -115,7 +123,7 @@ export default function EventosView({
                 quantidade={meusConfirmados.length}
               />
               {meusConfirmados.length === 0 ? (
-                <EmptyState mensagem="Você ainda não confirmou presença em nenhum evento. Navegue pelas categorias e comece agora mesmo a se conectar e evoluir cada vez mais." />
+                <EmptyState variant="sem-eventos-confirmados" />
               ) : (
                 <div className="flex flex-col gap-3">
                   {meusConfirmados.map((evento) => (
@@ -131,7 +139,7 @@ export default function EventosView({
                 quantidade={meusInteresses.length}
               />
               {meusInteresses.length === 0 ? (
-                <EmptyState mensagem="Você ainda não marcou interesse em nenhum evento." />
+                <EmptyState variant="sem-interesses" />
               ) : (
                 <div className="flex flex-col gap-3">
                   {meusInteresses.map((evento) => (
@@ -147,6 +155,7 @@ export default function EventosView({
             titulo="Eventos em destaque"
             eventos={eventosDestaque}
             destaque
+            emptyVariant={variantListaFiltrada}
             // TODO: trocar por /eventos/destaque quando essa rota existir
             verTodosHref="/eventos"
           />
@@ -154,6 +163,7 @@ export default function EventosView({
           <EventosGrid
             titulo="Próximos eventos"
             eventos={proximosEventos}
+            emptyVariant={variantListaFiltrada}
             // TODO: trocar por /eventos/proximos quando essa rota existir
             verTodosHref="/eventos"
           />
@@ -161,7 +171,7 @@ export default function EventosView({
           <EventosGrid
             titulo="Meetups"
             eventos={meetups}
-            mensagemVazia="Ainda não temos meetups agendados."
+            emptyMensagem="Ainda não temos meetups agendados."
           />
         </main>
       </div>
