@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Sidebar from "@/components/shared/Sidebar";
 import Header from "@/components/shared/Header";
@@ -23,6 +24,9 @@ import {
 } from "@/components/eventos/eventosMock";
 
 const USAR_MOCK_TEMPORARIO = true;
+const CATEGORIA_PADRAO = "Todos os eventos";
+/** Espera o usuário parar de digitar antes de gravar a busca na URL, pra não empilhar navegação a cada tecla. */
+const DEBOUNCE_BUSCA_MS = 400;
 
 interface EventosViewProps {
   /** A rota pública renderiza a versão deslogada; a autenticada, a completa. */
@@ -34,6 +38,10 @@ export default function EventosView({
   logado = true,
   nomeUsuario,
 }: EventosViewProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [eventos, setEventos] = useState<Evento[]>(
     USAR_MOCK_TEMPORARIO ? eventosMock : [],
   );
@@ -48,8 +56,45 @@ export default function EventosView({
   const [meetups] = useState<Evento[]>(
     USAR_MOCK_TEMPORARIO ? meetupsMock : [],
   );
-  const [categoria, setCategoria] = useState("Todos os eventos");
-  const [busca, setBusca] = useState("");
+
+  // Categoria e busca vivem na URL (?categoria=&busca=) para o filtro ser
+  // compartilhável por link e sobreviver a voltar/avançar do navegador.
+  const categoria = searchParams.get("categoria") ?? CATEGORIA_PADRAO;
+  const buscaUrl = searchParams.get("busca") ?? "";
+
+  // Estado local só pra o campo de busca responder a cada tecla sem esperar
+  // a URL gravar; a URL é a fonte de verdade. Ajuste durante a renderização
+  // (em vez de useEffect) sempre que ela mudar por fora (voltar/avançar do
+  // navegador, link compartilhado) — ver "Adjusting state on prop change" nos docs do React.
+  const [busca, setBusca] = useState(buscaUrl);
+  const [ultimaBuscaUrl, setUltimaBuscaUrl] = useState(buscaUrl);
+  if (buscaUrl !== ultimaBuscaUrl) {
+    setUltimaBuscaUrl(buscaUrl);
+    setBusca(buscaUrl);
+  }
+
+  const atualizarQuery = (chave: string, valor: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (valor) {
+      params.set(chave, valor);
+    } else {
+      params.delete(chave);
+    }
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  };
+
+  const selecionarCategoria = (valor: string) =>
+    atualizarQuery("categoria", valor === CATEGORIA_PADRAO ? "" : valor);
+
+  useEffect(() => {
+    if (busca === buscaUrl) return;
+    const handle = setTimeout(() => atualizarQuery("busca", busca.trim()), DEBOUNCE_BUSCA_MS);
+    return () => clearTimeout(handle);
+    // atualizarQuery muda de identidade a cada render (depende de searchParams/router);
+    // rodar só quando a busca digitada muda evita recriar o timer sem necessidade.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [busca]);
 
   useEffect(() => {
     if (USAR_MOCK_TEMPORARIO) return;
@@ -59,7 +104,7 @@ export default function EventosView({
   }, []);
 
   const eventosFiltrados = eventos
-    .filter((evento) => categoria === "Todos os eventos" || evento.categoria === categoria)
+    .filter((evento) => categoria === CATEGORIA_PADRAO || evento.categoria === categoria)
     .filter((evento) =>
       evento.titulo.toLowerCase().includes(busca.trim().toLowerCase()),
     );
@@ -68,7 +113,7 @@ export default function EventosView({
   const proximosEventos = eventosFiltrados;
 
   // Com busca/filtro ativo, a lista vazia é "sem resultado" e não "seção sem eventos".
-  const filtroAtivo = categoria !== "Todos os eventos" || busca.trim() !== "";
+  const filtroAtivo = categoria !== CATEGORIA_PADRAO || busca.trim() !== "";
   const variantListaFiltrada: EmptyStateVariant = filtroAtivo
     ? "busca-sem-resultado"
     : "secao-vazia";
@@ -110,7 +155,12 @@ export default function EventosView({
               </p>
             </div>
 
-            <EventosFilters onChange={setCategoria} onBuscarChange={setBusca} />
+            <EventosFilters
+              categoriaAtiva={categoria}
+              valorBusca={busca}
+              onChange={selecionarCategoria}
+              onBuscarChange={setBusca}
+            />
           </div>
 
           {logado && <UpcomingEventsStrip eventos={meusConfirmados} />}
