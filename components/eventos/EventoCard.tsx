@@ -14,8 +14,8 @@ export default function EventoCard({
   onSaberMais,
 }: EventoCardProps) {
   return (
-    <div className="relative flex h-[330px] w-[360px] flex-col overflow-hidden rounded-2xl border border-eventos-border bg-eventos-card shadow-[0_8px_24px_rgba(0,0,0,0.25)]">
-      <div className="relative h-[140px] w-full shrink-0 bg-gradient-to-br from-[#3D1A6E] via-[#1B0F3D] to-[#0A0520]">
+    <div className="relative flex h-82.5 w-90 flex-col overflow-hidden rounded-2xl border border-eventos-border bg-eventos-card shadow-[0_8px_24px_rgba(0,0,0,0.25)]">
+      <div className="relative h-35 w-full shrink-0 bg-linear-to-br from-[#3D1A6E] via-[#1B0F3D] to-[#0A0520]">
         {evento.imagemUrl && (
           <Image
             src={evento.imagemUrl}
@@ -27,8 +27,8 @@ export default function EventoCard({
         )}
       </div>
 
-      <div className="flex items-start justify-between px-[13px] pt-2">
-        <span className="rounded-[18px] bg-eventos-cyan/20 px-2.5 py-[3px] text-[13px] font-semibold text-eventos-cyan">
+      <div className="flex items-start justify-between px-3.25 pt-2">
+        <span className="rounded-[18px] bg-eventos-cyan/20 px-2.5 py-0.75 text-3.25 font-semibold text-eventos-cyan">
           {evento.categoria}
         </span>
 
@@ -38,7 +38,7 @@ export default function EventoCard({
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-1 px-[13px] pt-3">
+      <div className="flex min-h-0 flex-1 flex-col gap-1 px-3.25 pt-3">
         <h3 className="text-base font-bold text-white">{evento.titulo}</h3>
         <p className="line-clamp-2 text-sm font-normal text-white">
           {evento.descricao}
@@ -62,7 +62,7 @@ export default function EventoCard({
       </div>
 
       {evento.finalizado && (
-        <div className="absolute inset-0 flex items-start justify-center rounded-2xl bg-eventos-card/70 pt-[93px]">
+        <div className="absolute inset-0 flex items-start justify-center rounded-2xl bg-eventos-card/70 pt-23.25">
           <p className="text-sm font-normal text-white">
             Este evento já foi finalizado.
           </p>
