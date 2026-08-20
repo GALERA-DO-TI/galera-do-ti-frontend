@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext } from "react";
 
 import { InitialStateProps } from "./application/interfaces";

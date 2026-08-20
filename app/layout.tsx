@@ -1,5 +1,7 @@
+import "./globals.css";
 import { ApplicationProvider } from "@/contexts/ApplicationContext";
 import NonceProvider from "@/providers/NonceProvider";
+import AmplifyConfig from "@/components/shared/AmplifyConfig";
 import { Inter } from "next/font/google";
 import { headers } from "next/headers";
 
@@ -23,7 +25,9 @@ export default async function RootLayout({
         data-testid="body-layout"
       >
         <NonceProvider nonce={nonce}>
-          <ApplicationProvider>{children}</ApplicationProvider>
+          <ApplicationProvider>
+            {children}
+          </ApplicationProvider>
         </NonceProvider>
       </body>
     </html>
