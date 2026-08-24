@@ -1,18 +1,14 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Evento } from "@/interfaces/events";
 import { IconArrowRight, IconLocation } from "@/components/shared/icons";
 
 interface EventoCardProps {
   evento: Evento;
   priority?: boolean;
-  onSaberMais?: (evento: Evento) => void;
 }
 
-export default function EventoCard({
-  evento,
-  priority,
-  onSaberMais,
-}: EventoCardProps) {
+export default function EventoCard({ evento, priority }: EventoCardProps) {
   return (
     <div className="relative flex h-82.5 w-90 flex-col overflow-hidden rounded-2xl border border-eventos-border bg-eventos-card shadow-[0_8px_24px_rgba(0,0,0,0.25)]">
       <div className="relative h-35 w-full shrink-0 bg-linear-to-br from-[#3D1A6E] via-[#1B0F3D] to-[#0A0520]">
@@ -50,14 +46,13 @@ export default function EventoCard({
             <span className="truncate">{evento.local}</span>
           </span>
 
-          <button
-            type="button"
-            onClick={() => onSaberMais?.(evento)}
+          <Link
+            href={`/eventos/${evento.id}`}
             className="flex shrink-0 items-center gap-1.5 rounded-[10px] bg-eventos-pink px-3 py-1.5 text-xs font-semibold text-white"
           >
             Saber mais
             <IconArrowRight className="h-3 w-5 shrink-0" />
-          </button>
+          </Link>
         </div>
       </div>
 

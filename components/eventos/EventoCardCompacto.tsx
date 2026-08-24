@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Evento } from "@/interfaces/events";
 import { IconLocation } from "@/components/shared/icons";
 
@@ -46,10 +47,13 @@ export default function EventoCardCompacto({
             <span className="truncate">{evento.local}</span>
           </span>
 
-          <button className="flex shrink-0 items-center gap-1 text-[10px] lg:text-[12px] font-semibold text-eventos-cyan underline">
+          <Link
+            href={`/eventos/${evento.id}`}
+            className="flex shrink-0 items-center gap-1 text-[10px] lg:text-[12px] font-semibold text-eventos-cyan underline"
+          >
             Ver detalhes
             <span aria-hidden>→</span>
-          </button>
+          </Link>
         </div>
       </div>
 

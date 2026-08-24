@@ -141,21 +141,21 @@ export default function EventosView({
         eventos={eventosDestaque}
         destaque
         emptyVariant={variantListaFiltrada}
-        verTodosHref={comQueryAtual("/eventos/destaque")}
+        verTodosHref={comQueryAtual("/eventos/secao/destaque")}
       />
 
       <EventosGrid
         titulo="Próximos eventos"
         eventos={proximosEventos}
         emptyVariant={variantListaFiltrada}
-        verTodosHref={comQueryAtual("/eventos/proximos")}
+        verTodosHref={comQueryAtual("/eventos/secao/proximos")}
       />
 
       <EventosGrid
         titulo="Meetups"
         eventos={meetups}
         emptyMensagem="Ainda não temos meetups agendados."
-        verTodosHref={comQueryAtual("/eventos/meetups")}
+        verTodosHref={comQueryAtual("/eventos/secao/meetups")}
       />
     </EventosShell>
   );
