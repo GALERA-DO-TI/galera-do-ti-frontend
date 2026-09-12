@@ -45,12 +45,24 @@ export default function EventoCard({ evento, priority }: EventoCardProps) {
             <IconLocation className="h-4 w-4 shrink-0" />
             <span className="truncate">{evento.local}</span>
           </span>
+        </div>
+        <div className="mt-auto flex items-center justify-between gap-2 pb-1">
+          <span className="flex min-w-0 items-center justify-center gap-1 text-[13px] font-semibold text-eventos-cyan">
+            <Image
+              width={16}
+              height={16}
+              className="shrink-0"
+              src="/icons/icon-bookmark.svg"
+              alt="Bookmark"
+            />
+            <span className="font-normal text-xs">Salvar evento</span>
+          </span>
 
           <Link
             href={`/eventos/${evento.id}`}
-            className="flex shrink-0 items-center gap-1.5 rounded-[10px] bg-eventos-pink px-3 py-1.5 text-xs font-semibold text-white"
+            className="flex shrink-0 items-center gap-1.5 rounded-[10px] bg-eventos-pink px-3 py-1.5 text-sm font-medium text-black"
           >
-            Saber mais
+            Inscreva-se
             <IconArrowRight className="h-3 w-5 shrink-0" />
           </Link>
         </div>

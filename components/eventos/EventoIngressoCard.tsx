@@ -71,7 +71,7 @@ export default function EventoIngressoCard({
       <button
         type="button"
         onClick={() => setInscrito(true)}
-        className="mt-1 flex h-11 w-full items-center justify-center rounded-full bg-gradient-to-r from-eventos-pink to-eventos-purple text-sm font-semibold text-white shadow-[0_0_18px_0_rgba(255,45,175,0.4)]"
+        className="mt-1 flex h-11 w-full items-center justify-center rounded-full bg-linear-to-r from-eventos-pink to-eventos-purple text-sm font-medium text-white shadow-[0_0_18px_0_rgba(255,45,175,0.4)]"
       >
         Inscrever-se
       </button>

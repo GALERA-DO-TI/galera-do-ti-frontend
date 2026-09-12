@@ -12,7 +12,7 @@ interface EventosGridProps {
   titulo: string;
   eventos: Evento[];
   verTodosHref?: string;
-  /** Card grande (360x330) só no desktop; abaixo disso sempre usa o compacto. */
+  /** Card grande (291–380x336–380) só no desktop; abaixo disso sempre usa o compacto. */
   destaque?: boolean;
   /** Variante do EmptyState quando `eventos` está vazio. @default "secao-vazia" */
   emptyVariant?: EmptyStateVariant;
