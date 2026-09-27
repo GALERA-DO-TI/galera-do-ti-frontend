@@ -263,6 +263,14 @@ export function IconMenu({ className = base }: IconProps) {
   );
 }
 
+export function IconClose({ className = base }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M18 6 6 18M6 6l12 12" />
+    </svg>
+  );
+}
+
 export function IconLocation({ className = base }: IconProps) {
   return (
     <svg viewBox="0 0 16 16" fill="none" stroke="#00E9FE" strokeLinecap="round" strokeLinejoin="round" className={className}>
