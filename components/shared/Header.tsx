@@ -3,27 +3,154 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import {
   IconChevronDown,
   IconChevronRight,
   IconUser,
   IconMessageCircle,
   IconMenu,
+  IconClose,
+  IconFacebook,
+  IconInstagram,
+  IconTelegram,
+  IconDiscord,
+  IconYoutube,
+  IconWhatsapp,
+  IconSpotify,
+  IconLinkedin,
 } from "./icons";
 import { menuPerfil, menuPublico } from "@/helpers/headerLinks";
+import { sidebarGroups } from "@/helpers/sidebarLinks";
+
+const navMobile = sidebarGroups
+  .slice(0, 3)
+  .flatMap((group) => group.links)
+  .filter(
+    (link, index, arr) =>
+      arr.findIndex((outro) => outro.href === link.href) === index,
+  );
+
+const redesSociais = [
+  IconFacebook,
+  IconInstagram,
+  IconTelegram,
+  IconDiscord,
+  IconYoutube,
+  IconWhatsapp,
+  IconSpotify,
+  IconLinkedin,
+];
 
 interface HeaderProps {
   logado?: boolean;
   nomeUsuario?: string;
+  expandirEm?: "lg" | "xl";
+  mostrarDashboard?: boolean;
+  navInicialAberto?: boolean;
 }
 
-export default function Header({ logado = true, nomeUsuario }: HeaderProps) {
+export default function Header({
+  logado = true,
+  nomeUsuario,
+  expandirEm = "lg",
+  mostrarDashboard = true,
+  navInicialAberto = false,
+}: HeaderProps) {
   const [menuAberto, setMenuAberto] = useState(false);
   const [submenuAberto, setSubmenuAberto] = useState<string | null>(null);
+  const [navAberto, setNavAberto] = useState(navInicialAberto);
+  const xl = expandirEm === "xl";
+  const classes = {
+    logo: logado ? (xl ? "flex xl:hidden" : "flex lg:hidden") : "flex",
+    nav: xl
+      ? "hidden xl:flex items-center gap-6 xl:mx-auto 2xl:gap-8"
+      : "hidden lg:flex items-center gap-8 lg:mr-[143px] lg:ml-[89px]",
+    dashboard: xl ? "hidden xl:flex" : "hidden lg:flex",
+    nome: !mostrarDashboard
+      ? "hidden md:block"
+      : xl
+        ? "hidden md:block xl:hidden"
+        : "hidden md:block lg:hidden",
+    menu: xl ? "flex xl:hidden" : "flex lg:hidden",
+    drawer: xl ? "xl:hidden" : "lg:hidden",
+  };
+  const pathname = usePathname();
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+
+  const botaoMenu = (
+    <button
+      aria-label="Abrir menu"
+      aria-expanded={navAberto}
+      onClick={() => setNavAberto((open) => !open)}
+      className={`${classes.menu} text-white`}
+    >
+      {navAberto ? (
+        <IconClose className="h-6 w-6" />
+      ) : (
+        <IconMenu className="h-6 w-6" />
+      )}
+    </button>
+  );
+
+  const menuMobile = navAberto && (
+    <div className={`fixed inset-x-0 bottom-0 top-[45px] z-40 flex flex-col gap-6 overflow-y-auto bg-eventos-page px-6 py-6 md:top-[60px] ${classes.drawer}`}>
+      <nav className="flex flex-col gap-1">
+        {navMobile.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            onClick={() => setNavAberto(false)}
+            className={`flex items-center gap-4 rounded-[999px] px-4 py-3 text-base transition-colors ${
+              isActive(link.href)
+                ? "bg-gradient-to-r from-eventos-pink to-eventos-purple font-semibold text-white shadow-[0_0_18px_rgba(255,45,175,0.45)]"
+                : "text-eventos-muted hover:bg-white/5"
+            }`}
+          >
+            <link.icon className="h-5 w-5 shrink-0" />
+            {link.label}
+          </Link>
+        ))}
+      </nav>
+
+      <div className="mt-2 flex flex-col items-center gap-3 rounded-2xl border-[1.5px] border-eventos-pink/70 bg-[#12122A] p-4 shadow-[0_0_20px_rgba(255,45,175,0.25)]">
+        <Image
+          src="/axalote.png"
+          alt="Axolote mascote Galera do TI"
+          width={72}
+          height={72}
+        />
+        <p className="text-center text-sm font-medium text-white">
+          Seja parte da maior comunidade de tecnologia!
+        </p>
+        <button className="w-full rounded-[10px] bg-gradient-to-r from-[#3d8bff] to-eventos-cyan px-4 py-3 text-sm font-semibold text-[#06121f]">
+          {logado ? "Convidar amigos" : "Cadastrar agora"}
+        </button>
+      </div>
+
+      <div className="flex flex-col items-center gap-3">
+        <span className="text-sm font-semibold text-white">Siga a gente</span>
+        <div className="flex items-center justify-center gap-4">
+          {redesSociais.map((Icone, i) => (
+            <a
+              key={i}
+              href="#"
+              aria-label="Rede social"
+              className="text-eventos-muted transition-colors hover:text-white"
+            >
+              <Icone className="h-5 w-5" />
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <header className="relative flex h-full w-full flex-1 items-center justify-between bg-[#02010F] px-4 md:px-6">
-      <span className={`items-center ${logado ? "flex lg:hidden" : "flex"}`}>
+      <span className={`items-center ${classes.logo}`}>
         <Image
           src="/logo-galera-do-ti.svg"
           alt="Galera do TI"
@@ -33,7 +160,7 @@ export default function Header({ logado = true, nomeUsuario }: HeaderProps) {
         />
       </span>
 
-      <nav className="hidden lg:flex items-center gap-8 lg:mr-[143px] lg:ml-[89px]">
+      <nav className={classes.nav}>
         {menuPublico.map((item) =>
           item.submenu ? (
             <div key={item.href} className="relative">
@@ -88,47 +215,50 @@ export default function Header({ logado = true, nomeUsuario }: HeaderProps) {
 
       {!logado ? (
         <div className="ml-auto flex shrink-0 items-center gap-1 lg:gap-2">
-          {/* TEMPORÁRIO: leva direto para a versão logada só para conferência
-              visual. A rota de autenticação real fica com o Yago. */}
+          {/* TEMPORÁRIO: leva direto para a versão logada da página atual só
+              para conferência visual. A rota de autenticação real fica com o Yago. */}
           <Link
-            href="/eventos?preview=logado"
-            className="flex items-center justify-center px-3 lg:px-[28px] lg:py-[14px] text-xs lg:text-base font-semibold text-[#ff7acb]"
+            href={`${pathname}?preview=logado`}
+            className={`${xl ? "hidden md:flex" : "flex"} items-center justify-center px-3 lg:px-[28px] lg:py-[14px] text-xs lg:text-base font-semibold text-[#ff7acb]`}
           >
             Entrar
           </Link>
 
           <Link
-            href="/eventos?preview=logado"
-            className="flex h-[23px] w-[73px] lg:h-8 lg:w-[120px] items-center justify-center rounded-full bg-gradient-to-r from-eventos-pink to-eventos-purple text-xs lg:text-base font-semibold text-white shadow-[0_0_18px_0_rgba(255,45,175,0.4)]"
+            href={`${pathname}?preview=logado`}
+            className={`${xl ? "hidden md:flex" : "flex"} h-[23px] w-[73px] lg:h-8 lg:w-[120px] items-center justify-center rounded-full bg-gradient-to-r from-eventos-pink to-eventos-purple text-xs lg:text-base font-semibold text-white shadow-[0_0_18px_0_rgba(255,45,175,0.4)]`}
           >
             Cadastrar
           </Link>
+
+          {xl && <span className="ml-3 flex xl:hidden">{botaoMenu}</span>}
+          {xl && menuMobile}
         </div>
       ) : (
       <div className="ml-auto flex shrink-0 items-center gap-3 md:pr-5">
-        <Link
-          href="/dashboard"
-          className="hidden lg:flex h-8 w-[120px] items-center justify-center rounded-xl border border-eventos-purple bg-[rgba(14,14,34,0.33)] px-[28px] py-[14px] text-sm font-semibold text-white backdrop-blur-[3.5px]"
-        >
-          Dashboard
-        </Link>
+        {mostrarDashboard && (
+          <Link
+            href="/dashboard"
+            className={`${classes.dashboard} h-8 w-[120px] items-center justify-center rounded-xl border border-eventos-purple bg-[rgba(14,14,34,0.33)] px-[28px] py-[14px] text-sm font-semibold text-white backdrop-blur-[3.5px]`}
+          >
+            Dashboard
+          </Link>
+        )}
 
         <button
           onClick={() => setMenuAberto((open) => !open)}
           className="flex items-center gap-2"
         >
           <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-eventos-pink">
-            <Image src="/axalote.png" alt="Avatar" fill className="object-cover" />
+            <Image src="/axalote.png" alt="Avatar" width={40} height={40} className="h-full w-full object-cover" />
             <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border border-eventos-sidebar bg-green-400" />
           </span>
-          <span className="hidden md:block lg:hidden text-sm font-medium text-white">
+          <span className={`${classes.nome} text-sm font-medium text-white`}>
             {nomeUsuario ?? "Usuário"}
           </span>
         </button>
 
-        <button aria-label="Abrir menu" className="flex lg:hidden text-white">
-          <IconMenu className="h-6 w-6" />
-        </button>
+        {botaoMenu}
 
         {menuAberto && (
           <div className="absolute right-4 md:right-6 top-[64px] z-10 w-64 rounded-2xl border border-eventos-border bg-eventos-card p-2 shadow-lg">
@@ -140,7 +270,7 @@ export default function Header({ logado = true, nomeUsuario }: HeaderProps) {
               className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white/5"
             >
               <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full border-2 border-eventos-pink">
-                <Image src="/axalote.png" alt="Avatar" fill className="object-cover" />
+                <Image src="/axalote.png" alt="Avatar" width={40} height={40} className="h-full w-full object-cover" />
               </span>
               <span className="flex flex-col gap-0.5">
                 <span className="text-sm text-white">
@@ -165,6 +295,8 @@ export default function Header({ logado = true, nomeUsuario }: HeaderProps) {
             </button>
           </div>
         )}
+
+        {menuMobile}
       </div>
       )}
     </header>

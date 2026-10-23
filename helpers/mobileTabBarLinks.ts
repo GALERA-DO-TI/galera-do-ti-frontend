@@ -4,6 +4,6 @@ export const mobileTabBarLinks = [
   { label: "Início", href: "/", icon: IconHome },
   { label: "Vagas", href: "/vagas", icon: IconBriefcase },
   { label: "Comunidade", href: "/comunidades", icon: IconUsers },
-  { label: "Eventos", href: "/eventos", icon: IconCalendar, active: true },
+  { label: "Eventos", href: "/eventos", icon: IconCalendar },
   { label: "Menu", href: "/configuracoes", icon: IconSettings },
 ];

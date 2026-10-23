@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { sidebarGroups } from "@/helpers/sidebarLinks";
 import { SidebarLink } from "@/interfaces/sidebar";
 import {
@@ -14,9 +15,8 @@ import {
   IconWhatsapp,
   IconSpotify,
   IconLinkedin,
+  IconMedal,
 } from "@/components/shared/icons";
-
-const allLinks = sidebarGroups.flatMap((group) => group.links);
 
 const redesSociais = [
   { label: "Facebook", icon: IconFacebook },
@@ -29,15 +29,31 @@ const redesSociais = [
   { label: "LinkedIn", icon: IconLinkedin },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  /**
+   * Breakpoint em que a sidebar deixa de ser só ícones e fica expandida.
+   * "lg" é o comportamento do eventos; "xl" segue o frame tablet do Figma
+   * de Parceiros (1024px com ícones + coluna direita).
+   */
+  expandirEm?: "lg" | "xl";
+}
+
+export default function Sidebar({ expandirEm = "lg" }: SidebarProps) {
   const [submenuAberto, setSubmenuAberto] = useState<SidebarLink | null>(
     null,
   );
+  const xl = expandirEm === "xl";
+  const pathname = usePathname();
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const emParceiros = pathname.startsWith("/parceiros");
 
   return (
     <>
       {/* MD/Tablet: sidebar colapsada, só ícones */}
-      <aside className="relative hidden md:flex lg:hidden w-[80px] shrink-0 flex-col border-r border-white/5 bg-[#0a0a18]/90 py-6">
+      <aside
+        className={`relative hidden md:flex ${xl ? "xl:hidden" : "lg:hidden"} w-[80px] shrink-0 flex-col border-r border-white/5 bg-[#0a0a18]/90 py-6`}
+      >
         <div className="scrollbar-none flex flex-col items-center gap-[22px] overflow-y-auto">
           {sidebarGroups.map((group) => (
             <div key={group.title} className="flex flex-col items-center">
@@ -53,7 +69,7 @@ export default function Sidebar() {
                       : setSubmenuAberto(null)
                   }
                   className={`flex h-10 w-10 items-center justify-center rounded-2xl ${
-                    link.active
+                    isActive(link.href)
                       ? "bg-gradient-to-r from-[#FF2DAF] to-[#7B2FF7] text-white"
                       : "text-white hover:bg-white/5"
                   }`}
@@ -70,8 +86,9 @@ export default function Sidebar() {
             <Image
               src="/axalote.png"
               alt="Axolote mascote Galera do TI"
-              fill
-              className="object-cover"
+              width={40}
+              height={40}
+              className="h-full w-full object-cover"
             />
           </span>
         </div>
@@ -111,7 +128,34 @@ export default function Sidebar() {
       </aside>
 
       {/* LG/WEB: sidebar expandida, ícones + labels */}
-      <aside className="scrollbar-none sticky top-0 hidden lg:flex h-[calc(100vh-60px)] w-[250px] shrink-0 flex-col overflow-y-auto border-r border-white/5 bg-eventos-sidebar py-6">
+      <aside
+        className={`scrollbar-none sticky top-0 hidden ${xl ? "xl:flex" : "lg:flex"} h-[calc(100vh-60px)] w-[250px] shrink-0 flex-col overflow-y-auto border-r border-white/5 bg-eventos-sidebar py-6`}
+      >
+        {emParceiros && (
+          <div className="mb-6 flex flex-col gap-1 px-4">
+            <div className="flex items-center gap-3 rounded-[999px] bg-gradient-to-r from-eventos-pink to-eventos-purple px-4 py-[11px] text-sm font-medium text-white shadow-[0_0_18px_rgba(255,45,175,0.45)]">
+              <IconMedal className="h-5 w-5 shrink-0" />
+              Parcerias
+            </div>
+            <span className="mt-4 px-2 pb-1 text-xs font-semibold text-eventos-pink">
+              PAINEL DE PARCERIAS
+            </span>
+            <Link
+              href="/parceiros?preview=logado"
+              className="flex items-center gap-3 rounded-[999px] px-4 py-[11px] text-sm text-white hover:bg-white/5"
+            >
+              <IconMedal className="h-5 w-5 shrink-0" />
+              Parceiros
+            </Link>
+            <Link
+              href="/parceiros?preview=logado&proposta=aberta"
+              className="flex items-center gap-3 rounded-[999px] px-4 py-[11px] text-sm text-eventos-muted hover:bg-white/5"
+            >
+              <IconMedal className="h-5 w-5 shrink-0" />
+              Tornar-se Parceiro
+            </Link>
+          </div>
+        )}
         <div className="flex flex-col gap-[35px] px-4">
           {sidebarGroups.map((group) => (
             <div key={group.title} className="flex flex-col">
@@ -130,7 +174,7 @@ export default function Sidebar() {
                     className={`flex items-center gap-3 rounded-[999px] px-4 py-[11px] text-left text-sm transition-colors ${
                       submenuAberto?.href === link.href
                         ? "bg-gradient-to-r from-eventos-pink to-eventos-purple text-white font-medium"
-                        : link.active
+                        : isActive(link.href)
                           ? "bg-gradient-to-r from-eventos-pink to-eventos-purple text-white font-medium shadow-[0_0_18px_rgba(255,45,175,0.45)]"
                           : "text-eventos-muted hover:bg-white/5"
                     }`}
@@ -143,7 +187,7 @@ export default function Sidebar() {
                     key={link.href}
                     href={link.href}
                     className={`flex items-center gap-3 rounded-[999px] px-4 py-[11px] text-sm transition-colors ${
-                      link.active
+                      isActive(link.href)
                         ? "bg-gradient-to-r from-eventos-pink to-eventos-purple text-white font-medium shadow-[0_0_18px_rgba(255,45,175,0.45)]"
                         : "text-eventos-muted hover:bg-white/5"
                     }`}
