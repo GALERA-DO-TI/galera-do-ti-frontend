@@ -3,7 +3,7 @@ import Button from "@/components/ui/Button";
 
 export default function Hero() {
   return (
-    <section className="relative isolate overflow-hidden px-6 py-12 md:py-16">
+    <section className="relative isolate overflow-hidden px-6">
       <div className="absolute inset-x-0 bottom-0 -z-20 aspect-[1663/633] w-full min-h-[380px]">
         <Image
           src="/assets/hero-bg.png"
@@ -19,7 +19,7 @@ export default function Hero() {
       />
 
       <div className="relative mx-auto aspect-[1663/633] w-full max-w-6xl min-h-[380px]">
-        <div className="absolute inset-0 flex max-w-xl flex-col justify-center">
+        <div className="absolute inset-orbescorelogo0 flex max-w-xl flex-col justify-center">
           <h1 className="text-2xl font-extrabold leading-[1.146] tracking-[0.01em] md:text-[32px]">
             CONECTANDO
             <br />

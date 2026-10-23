@@ -4,7 +4,7 @@ const LOGOS = [
   { src: "/assets/image-10.png", alt: "design.coffee", width: 133, height: 70 },
   { src: "/assets/fiaplogo-1.png", alt: "FIAP", width: 70, height: 70 },
   { src: "/assets/helplinguaslogo-1.png", alt: "Help Línguas", width: 139, height: 61 },
-  { src: "/assets/orbescorelogo-1.png", alt: "Orbes Core", width: 105, height: 70 },
+  { src: "/assets/orbescorelogo-1.png", alt: "OrbisCore", width: 105, height: 70 },
 ];
 
 export default function Companies() {

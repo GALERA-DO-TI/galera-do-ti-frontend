@@ -22,7 +22,7 @@ export default function HomePage() {
   return (
     <div className="flex-1">
       <Header />
-      <main>
+      <main className="px-0">
         <Hero />
         <Stats />
         <Features />
