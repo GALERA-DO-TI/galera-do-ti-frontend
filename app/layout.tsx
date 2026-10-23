@@ -5,7 +5,11 @@ import AmplifyConfig from "@/components/shared/AmplifyConfig";
 import { Inter } from "next/font/google";
 import { headers } from "next/headers";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "800"],
+});
 
 export const dynamic = "force-dynamic";
 
@@ -19,9 +23,9 @@ export default async function RootLayout({
   const nonce = reqHeaders.get("x-nonce");
 
   return (
-    <html lang="en" data-theme="fantasy" data-testid="root-layout">
+    <html lang="pt-BR" data-theme="fantasy" data-testid="root-layout">
       <body
-        className={`${inter.className} min-h-screen m-0 p-0`}
+        className={`${inter.variable} ${inter.className} min-h-screen m-0 p-0`}
         data-testid="body-layout"
       >
         <NonceProvider nonce={nonce}>

@@ -16,6 +16,23 @@
   --color-eventos-pink: #ff2daf;
   --color-eventos-purple: #7b2ff7;
   --color-eventos-muted: #b8bce0;
+
+  /* Landing page */
+  --color-bg: #050510;
+  --color-primary: #292844;
+  --color-surface: #ffffff;
+  --color-on-surface: #9a98b2;
+  --color-accent: #ff2daf;
+  --color-accent-2: #7b2ff7;
+  --color-accent-3: #0e0e22;
+  --color-accent-4: #5d4ce7;
+  --color-accent-5: #0073d8;
+  --color-accent-6: #02d0fb;
+  --color-accent-7: #0272d2;
+  --color-accent-8: #00e7fe;
+  --color-grey-500: #bcbfc5;
+  --color-success: #0bc33f;
+  --color-warning: #fec524;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
