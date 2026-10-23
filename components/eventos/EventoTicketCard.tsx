@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Evento } from "@/interfaces/events";
 import { IconLocation } from "@/components/shared/icons";
 
@@ -54,9 +55,12 @@ export default function EventoTicketCard({
         </span>
       </div>
 
-      <button className="shrink-0 rounded-[8px] bg-eventos-pink px-4 py-2 text-[13px] font-semibold text-white">
+      <Link
+        href={`/eventos/${evento.id}`}
+        className="shrink-0 rounded-[8px] bg-eventos-pink px-4 py-2 text-[13px] font-semibold text-white"
+      >
         Ver detalhes
-      </button>
+      </Link>
 
       {evento.finalizado && (
         <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-eventos-card/70">

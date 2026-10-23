@@ -1,18 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import Sidebar from "@/components/shared/Sidebar";
-import Header from "@/components/shared/Header";
-import MobileTabBar from "@/components/shared/MobileTabBar";
+import EventosShell from "@/components/eventos/EventosShell";
 import EventosFilters from "@/components/eventos/EventosFilters";
 import EventosGrid from "@/components/eventos/EventosGrid";
 import EmptyState from "@/components/eventos/EmptyState";
 import SectionCounter from "@/components/eventos/SectionCounter";
 import EventoTicketCard from "@/components/eventos/EventoTicketCard";
 import UpcomingEventsStrip from "@/components/eventos/UpcomingEventsStrip";
-import { getEventos } from "@/services/eventos";
+import { getEventosCached } from "@/services/eventosCache";
 import { Evento } from "@/interfaces/events";
+import { useFiltrosEventosNaUrl, CATEGORIA_PADRAO } from "@/hooks/useFiltrosEventosNaUrl";
 import {
   eventosMock,
   meusConfirmadosMock,
@@ -32,6 +30,15 @@ export default function EventosView({
   logado = true,
   nomeUsuario,
 }: EventosViewProps) {
+  const {
+    categoria,
+    busca,
+    setBusca,
+    selecionarCategoria,
+    filtroAtivo,
+    queryAtual,
+  } = useFiltrosEventosNaUrl();
+
   const [eventos, setEventos] = useState<Evento[]>(
     USAR_MOCK_TEMPORARIO ? eventosMock : [],
   );
@@ -46,18 +53,16 @@ export default function EventosView({
   const [meetups] = useState<Evento[]>(
     USAR_MOCK_TEMPORARIO ? meetupsMock : [],
   );
-  const [categoria, setCategoria] = useState("Todos os eventos");
-  const [busca, setBusca] = useState("");
 
   useEffect(() => {
     if (USAR_MOCK_TEMPORARIO) return;
-    getEventos()
+    getEventosCached()
       .then((data) => setEventos(Array.isArray(data) ? data : []))
       .catch(() => setEventos([]));
   }, []);
 
   const eventosFiltrados = eventos
-    .filter((evento) => categoria === "Todos os eventos" || evento.categoria === categoria)
+    .filter((evento) => categoria === CATEGORIA_PADRAO || evento.categoria === categoria)
     .filter((evento) =>
       evento.titulo.toLowerCase().includes(busca.trim().toLowerCase()),
     );
@@ -65,108 +70,93 @@ export default function EventosView({
   const eventosDestaque = eventosFiltrados;
   const proximosEventos = eventosFiltrados;
 
+  // Com busca/filtro ativo, a lista vazia é "sem resultado" e não "seção sem eventos".
+  const variantListaFiltrada = filtroAtivo ? "busca-sem-resultado" : "secao-vazia";
+
+  // Propaga o filtro atual (categoria/busca) e o preview de sessão pro "Ver
+  // todos" continuar com o mesmo contexto na página de seção.
+  const comQueryAtual = (href: string) =>
+    queryAtual ? `${href}?${queryAtual}` : href;
+
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="flex h-[45px] md:h-[60px] border-b border-eventos-border">
-        {logado && (
-          <div className="hidden lg:flex w-[250px] shrink-0 items-center border-r border-eventos-border bg-eventos-sidebar px-6">
-            <Image
-              src="/logo-galera-do-ti.svg"
-              alt="Galera do TI"
-              width={180}
-              height={28}
-              priority
-            />
-          </div>
-        )}
-        <div className="flex flex-1">
-          <Header logado={logado} nomeUsuario={nomeUsuario} />
+    <EventosShell logado={logado} nomeUsuario={nomeUsuario}>
+      <div className="flex flex-col gap-4">
+        <div>
+          <h1 className="text-base lg:text-[28px] font-bold text-white">
+            Eventos
+          </h1>
+          <p className="text-xs lg:text-base font-medium text-[#8e9198]">
+            Conecte-se, aprenda e cresça com a comunidade.
+          </p>
         </div>
+
+        <EventosFilters
+          categoriaAtiva={categoria}
+          valorBusca={busca}
+          onChange={selecionarCategoria}
+          onBuscarChange={setBusca}
+        />
       </div>
 
-      <div className="flex flex-1">
-        {logado && <Sidebar />}
+      {logado && <UpcomingEventsStrip eventos={meusConfirmados} />}
 
-        <main
-          className={`flex min-w-0 flex-1 flex-col gap-8 bg-eventos-page p-4 pb-28 md:p-8 md:pb-8 ${
-            logado ? "" : "lg:px-[112px]"
-          }`}
-        >
-          <div className="flex flex-col gap-4">
-            <div>
-              <h1 className="text-base lg:text-[28px] font-bold text-white">
-                Eventos
-              </h1>
-              <p className="text-xs lg:text-base font-medium text-[#8e9198]">
-                Conecte-se, aprenda e cresça com a comunidade.
-              </p>
-            </div>
+      {logado && (
+        <div className="hidden lg:grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <section className="flex flex-col gap-4">
+            <SectionCounter
+              titulo="Meus eventos confirmados"
+              quantidade={meusConfirmados.length}
+            />
+            {meusConfirmados.length === 0 ? (
+              <EmptyState variant="sem-eventos-confirmados" />
+            ) : (
+              <div className="flex flex-col gap-3">
+                {meusConfirmados.map((evento) => (
+                  <EventoTicketCard key={evento.id} evento={evento} confirmado />
+                ))}
+              </div>
+            )}
+          </section>
 
-            <EventosFilters onChange={setCategoria} onBuscarChange={setBusca} />
-          </div>
+          <section className="flex flex-col gap-4">
+            <SectionCounter
+              titulo="Meus interesses"
+              quantidade={meusInteresses.length}
+            />
+            {meusInteresses.length === 0 ? (
+              <EmptyState variant="sem-interesses" />
+            ) : (
+              <div className="flex flex-col gap-3">
+                {meusInteresses.map((evento) => (
+                  <EventoTicketCard key={evento.id} evento={evento} />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      )}
 
-          {logado && <UpcomingEventsStrip eventos={meusConfirmados} />}
+      <EventosGrid
+        titulo="Eventos em destaque"
+        eventos={eventosDestaque}
+        destaque
+        emptyVariant={variantListaFiltrada}
+        verTodosHref={comQueryAtual("/eventos/secao/destaque")}
+      />
 
-          {logado && (
-          <div className="hidden lg:grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <section className="flex flex-col gap-4">
-              <SectionCounter
-                titulo="Meus eventos confirmados"
-                quantidade={meusConfirmados.length}
-              />
-              {meusConfirmados.length === 0 ? (
-                <EmptyState mensagem="Você ainda não confirmou presença em nenhum evento. Navegue pelas categorias e comece agora mesmo a se conectar e evoluir cada vez mais." />
-              ) : (
-                <div className="flex flex-col gap-3">
-                  {meusConfirmados.map((evento) => (
-                    <EventoTicketCard key={evento.id} evento={evento} confirmado />
-                  ))}
-                </div>
-              )}
-            </section>
+      <EventosGrid
+        titulo="Próximos eventos"
+        eventos={proximosEventos}
+        emptyVariant={variantListaFiltrada}
+        verTodosHref={comQueryAtual("/eventos/secao/proximos")}
+      />
 
-            <section className="flex flex-col gap-4">
-              <SectionCounter
-                titulo="Meus interesses"
-                quantidade={meusInteresses.length}
-              />
-              {meusInteresses.length === 0 ? (
-                <EmptyState mensagem="Você ainda não marcou interesse em nenhum evento." />
-              ) : (
-                <div className="flex flex-col gap-3">
-                  {meusInteresses.map((evento) => (
-                    <EventoTicketCard key={evento.id} evento={evento} />
-                  ))}
-                </div>
-              )}
-            </section>
-          </div>
-          )}
-
-          <EventosGrid
-            titulo="Eventos em destaque"
-            eventos={eventosDestaque}
-            destaque
-            // TODO: trocar por /eventos/destaque quando essa rota existir
-            verTodosHref="/eventos"
-          />
-
-          <EventosGrid
-            titulo="Próximos eventos"
-            eventos={proximosEventos}
-            // TODO: trocar por /eventos/proximos quando essa rota existir
-            verTodosHref="/eventos"
-          />
-
-          <EventosGrid
-            titulo="Meetups"
-            eventos={meetups}
-            mensagemVazia="Ainda não temos meetups agendados."
-          />
-        </main>
-      </div>
-
-      {logado && <MobileTabBar />}
-    </div>
+      <EventosGrid
+        titulo="Meetups"
+        eventos={meetups}
+        emptyMensagem="Ainda não temos meetups agendados."
+        verTodosHref={comQueryAtual("/eventos/secao/meetups")}
+      />
+    </EventosShell>
   );
 }
