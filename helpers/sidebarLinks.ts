@@ -36,7 +36,7 @@ export const sidebarGroups: SidebarGroup[] = [
         ],
       },
       { label: "Comunidades", href: "/comunidades", icon: IconShare },
-      { label: "Eventos", href: "/eventos", icon: IconCalendar, active: true },
+      { label: "Eventos", href: "/eventos", icon: IconCalendar },
     ],
   },
   {
